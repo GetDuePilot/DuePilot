@@ -4,473 +4,924 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>DuePilot</title>
+<meta name="theme-color" content="#080d19">
+<title>DuePilot — Get paid. Without chasing.</title>
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
+:root{
+  --bg:#080d19;
+  --surface:#111a2c;
+  --surface2:#17243a;
+  --border:#263650;
+  --text:#edf4ff;
+  --muted:#91a2bd;
+  --cyan:#54d9f5;
+  --blue:#668cff;
+  --green:#5ce1b0;
+  --red:#ff777f;
+  --radius:18px;
+}
+
 *{box-sizing:border-box}
-body{margin:0;background:#0b1020;color:#e8edf7;font-family:Arial,sans-serif}
-header{padding:20px;background:#111a2e;border-bottom:1px solid #26334c}
-h1{margin:0;color:#63e6be}
-header p{color:#9aa9c2;margin:6px 0 0}
-main{max-width:950px;margin:auto;padding:20px}
-.card{background:#141e33;border:1px solid #293750;border-radius:13px;padding:18px;margin-bottom:16px}
-h2{font-size:19px;margin-top:0}
-input,select,textarea{width:100%;padding:12px;margin:7px 0 13px;background:#0b1427;border:1px solid #35445f;border-radius:8px;color:white}
-button{background:#63e6be;color:#07151a;border:0;padding:12px 16px;border-radius:8px;font-weight:bold;cursor:pointer;margin:4px 0}
-button.secondary{background:#293750;color:white}
-.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
-.metric{font-size:24px;font-weight:bold;color:#63e6be;margin-top:10px}
-small,.muted{color:#9aa9c2}
-.row{display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap}
-.invoice{border-top:1px solid #293750;padding:13px 0}
-.status{font-size:12px;padding:5px 8px;border-radius:20px;background:#293750}
-.hidden{display:none}
-label{font-size:13px;color:#b9c6da}
-#message,#appMessage{margin:12px 0;color:#63e6be}
-@media(max-width:600px){
-.grid{grid-template-columns:1fr}
-main{padding:12px}
+
+html{scroll-behavior:smooth}
+
+body{
+  margin:0;
+  min-height:100vh;
+  background:
+    radial-gradient(ellipse at 15% 0%,rgba(57,111,205,.16),transparent 40%),
+    radial-gradient(ellipse at 90% 30%,rgba(40,202,214,.08),transparent 35%),
+    var(--bg);
+  color:var(--text);
+  font-family:Inter,Arial,sans-serif;
+}
+
+button,input,select,textarea{font:inherit}
+
+button{
+  border:0;
+  cursor:pointer;
+  transition:transform .2s,filter .2s,background .2s;
+}
+
+button:hover{filter:brightness(1.12);transform:translateY(-2px)}
+button:active{transform:scale(.97)}
+button:disabled{opacity:.55;cursor:wait;transform:none}
+
+header{
+  position:sticky;
+  top:0;
+  z-index:10;
+  background:rgba(8,13,25,.88);
+  backdrop-filter:blur(14px);
+  border-bottom:1px solid rgba(84,217,245,.12);
+}
+
+.header-inner{
+  max-width:1150px;
+  margin:auto;
+  padding:15px 22px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:15px;
+}
+
+.brand{
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+
+.logo{
+  width:43px;
+  height:43px;
+  filter:drop-shadow(0 0 12px rgba(84,217,245,.22));
+  animation:logoFloat 4s ease-in-out infinite;
+}
+
+.brand-name{
+  font-size:21px;
+  font-weight:800;
+  letter-spacing:-.7px;
+}
+
+.brand-name span{color:var(--cyan)}
+
+.tagline{
+  color:var(--muted);
+  font-size:11px;
+  margin-top:3px;
+  letter-spacing:.4px;
+}
+
+.online{
+  color:var(--green);
+  font-size:11px;
+  border:1px solid rgba(92,225,176,.25);
+  padding:7px 11px;
+  border-radius:30px;
+  background:rgba(92,225,176,.07);
+}
+
+main{
+  max-width:1050px;
+  margin:auto;
+  padding:30px 20px 60px;
+}
+
+.card{
+  background:linear-gradient(145deg,rgba(23,36,58,.96),rgba(15,25,42,.97));
+  border:1px solid var(--border);
+  border-radius:var(--radius);
+  padding:22px;
+  margin-bottom:19px;
+  box-shadow:0 12px 35px rgba(0,0,0,.13);
+  transition:border-color .25s,transform .25s,box-shadow .25s;
+  animation:fadeUp .55s both;
+}
+
+.card:hover{
+  border-color:rgba(84,217,245,.38);
+  box-shadow:0 15px 38px rgba(0,0,0,.2);
+}
+
+h1,h2,h3,p{margin-top:0}
+
+h2{
+  font-size:19px;
+  letter-spacing:-.3px;
+  margin-bottom:9px;
+}
+
+h3{font-size:15px}
+
+.muted{color:var(--muted)}
+.small{font-size:12px}
+
+.auth-card{
+  max-width:460px;
+  margin:55px auto;
+  padding:30px;
+}
+
+.auth-heading{
+  text-align:center;
+  margin-bottom:25px;
+}
+
+.auth-heading .logo{
+  width:65px;
+  height:65px;
+  margin-bottom:12px;
+}
+
+.auth-heading h2{font-size:25px}
+
+input,select,textarea{
+  width:100%;
+  padding:13px 14px;
+  margin:8px 0 16px;
+  background:#0a1323;
+  border:1px solid #30415e;
+  border-radius:10px;
+  color:var(--text);
+  outline:none;
+  transition:border-color .2s,box-shadow .2s;
+}
+
+input:focus,select:focus,textarea:focus{
+  border-color:var(--cyan);
+  box-shadow:0 0 0 3px rgba(84,217,245,.1);
+}
+
+input::placeholder,textarea::placeholder{color:#657995}
+
+label{
+  font-size:13px;
+  color:#bdcbe0;
+  font-weight:600;
+}
+
+textarea{min-height:85px;resize:vertical}
+
+.btn{
+  padding:12px 17px;
+  border-radius:10px;
+  font-weight:700;
+  background:linear-gradient(110deg,var(--cyan),#75a8ff);
+  color:#07111e;
+  box-shadow:0 5px 18px rgba(84,217,245,.13);
+}
+
+.btn-secondary{
+  background:#263650;
+  color:var(--text);
+  box-shadow:none;
+}
+
+.btn-danger{
+  background:rgba(255,119,127,.12);
+  color:#ff9ca2;
+  border:1px solid rgba(255,119,127,.2);
+  box-shadow:none;
+}
+
+.btn-full{width:100%;margin-top:8px}
+
+.auth-actions{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+}
+
+.auth-actions button{width:100%}
+
+#message,#appMessage{
+  min-height:18px;
+  margin:14px 0 0;
+  color:var(--cyan);
+  font-size:13px;
+  overflow-wrap:anywhere;
+}
+
+.hero{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  flex-wrap:wrap;
+  gap:15px;
+  margin-bottom:23px;
+}
+
+.hero h2{
+  font-size:26px;
+  margin-bottom:5px;
+}
+
+.hero p{margin:0}
+
+.grid{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:15px;
+  margin-bottom:20px;
+}
+
+.metric-card{
+  position:relative;
+  overflow:hidden;
+  min-height:125px;
+}
+
+.metric-card:after{
+  content:"";
+  position:absolute;
+  width:100px;
+  height:100px;
+  right:-35px;
+  bottom:-45px;
+  border-radius:50%;
+  background:rgba(84,217,245,.08);
+}
+
+.metric-label{
+  color:var(--muted);
+  font-size:13px;
+}
+
+.metric{
+  font-size:27px;
+  font-weight:800;
+  color:var(--cyan);
+  margin-top:13px;
+  letter-spacing:-.7px;
+  overflow-wrap:anywhere;
+}
+
+.metric.red{color:var(--red)}
+
+.section-heading{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  margin-bottom:20px;
+}
+
+.section-icon{
+  width:35px;
+  height:35px;
+  border-radius:10px;
+  display:grid;
+  place-items:center;
+  background:rgba(84,217,245,.1);
+  color:var(--cyan);
+  font-size:18px;
+}
+
+.form-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:0 15px;
+}
+
+.full{grid-column:1/-1}
+
+.invoice{
+  border-top:1px solid var(--border);
+  padding:17px 0;
+  animation:fadeUp .4s both;
+}
+
+.invoice:first-child{border-top:0}
+
+.invoice p{margin:8px 0}
+
+.invoice-title{
+  font-weight:800;
+  font-size:15px;
+}
+
+.invoice-amount{
+  font-size:16px;
+  font-weight:800;
+  color:var(--cyan);
+}
+
+.status{
+  font-size:10px;
+  font-weight:800;
+  letter-spacing:.6px;
+  padding:6px 10px;
+  border-radius:30px;
+  background:#293750;
+  color:#cbd7e8;
+}
+
+.status.paid{
+  background:rgba(92,225,176,.12);
+  color:var(--green);
+}
+
+.status.overdue{
+  background:rgba(255,119,127,.12);
+  color:var(--red);
+}
+
+.status.pending{
+  background:rgba(102,140,255,.12);
+  color:#9db5ff;
+}
+
+.invoice-meta{
+  font-size:12px;
+  color:var(--muted);
+}
+
+.empty{
+  text-align:center;
+  padding:30px 10px;
+  color:var(--muted);
+  font-size:13px;
+}
+
+.hidden{display:none!important}
+
+.footer{
+  text-align:center;
+  color:#657995;
+  font-size:11px;
+  padding:15px;
+}
+
+@keyframes fadeUp{
+  from{opacity:0;transform:translateY(15px)}
+  to{opacity:1;transform:translateY(0)}
+}
+
+@keyframes logoFloat{
+  0%,100%{transform:translateY(0)}
+  50%{transform:translateY(-3px)}
+}
+
+@media(max-width:650px){
+  main{padding:20px 13px 40px}
+  .header-inner{padding:12px 15px}
+  .grid{grid-template-columns:1fr}
+  .card{padding:18px}
+  .auth-card{margin:25px auto;padding:22px}
+  .hero h2{font-size:23px}
+  .metric{font-size:25px}
+}
+
+@media(max-width:420px){
+  .form-grid{grid-template-columns:1fr}
+  .full{grid-column:auto}
+  .auth-actions{grid-template-columns:1fr}
+}
+
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{
+    animation:none!important;
+    transition:none!important;
+    scroll-behavior:auto!important;
+  }
 }
 </style>
 </head>
 
 <body>
+
 <header>
-<h1>DuePilot</h1>
-<p>Get paid. Without chasing.</p>
+  <div class="header-inner">
+    <div class="brand">
+      <svg class="logo" viewBox="0 0 100 100" fill="none"
+           xmlns="http://www.w3.org/2000/svg" aria-label="DuePilot logo">
+        <defs>
+          <linearGradient id="dpGradient" x1="10" y1="10" x2="90" y2="90">
+            <stop stop-color="#54D9F5"/>
+            <stop offset="1" stop-color="#668CFF"/>
+          </linearGradient>
+        </defs>
+        <rect x="5" y="5" width="90" height="90" rx="25"
+              fill="#14243B" stroke="url(#dpGradient)" stroke-width="3"/>
+        <path d="M31 25H49C65 25 76 36 76 52C76 68 65 79 49 79H31V25Z"
+              stroke="url(#dpGradient)" stroke-width="8"
+              stroke-linejoin="round"/>
+        <path d="M45 52H72M62 42L73 52L62 62"
+              stroke="#EAFBFF" stroke-width="5"
+              stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+
+      <div>
+        <div class="brand-name">Due<span>Pilot</span></div>
+        <div class="tagline">GET PAID. WITHOUT CHASING.</div>
+      </div>
+    </div>
+
+    <div class="online">● Online</div>
+  </div>
 </header>
 
 <main>
 
-<section id="authSection" class="card">
-<h2>Welcome to DuePilot</h2>
-<p class="muted">Manage your invoices and payments.</p>
+<!-- AUTHENTICATION -->
+<section id="authSection" class="card auth-card">
 
-<label>Username</label>
-<input id="username" type="text" placeholder="Choose a username">
+  <div class="auth-heading">
+    <svg class="logo" viewBox="0 0 100 100" fill="none"
+         xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="authGradient" x1="10" y1="10" x2="90" y2="90">
+          <stop stop-color="#54D9F5"/>
+          <stop offset="1" stop-color="#668CFF"/>
+        </linearGradient>
+      </defs>
+      <rect x="5" y="5" width="90" height="90" rx="25"
+            fill="#14243B" stroke="url(#authGradient)" stroke-width="3"/>
+      <path d="M31 25H49C65 25 76 36 76 52C76 68 65 79 49 79H31V25Z"
+            stroke="url(#authGradient)" stroke-width="8"
+            stroke-linejoin="round"/>
+      <path d="M45 52H72M62 42L73 52L62 62"
+            stroke="#EAFBFF" stroke-width="5"
+            stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
 
-<label>Email</label>
-<input id="email" type="email" placeholder="you@example.com">
+    <h2>Welcome to DuePilot</h2>
+    <p class="muted small">Manage your invoices. Stay in control.</p>
+  </div>
 
-<label>Password</label>
-<input id="password" type="password" placeholder="Your password">
+  <label>Username</label>
+  <input id="username" type="text" placeholder="Choose a username"
+         autocomplete="username">
 
-<button id="signup">Create account</button>
-<button id="login" class="secondary">Sign in</button>
+  <label>Email</label>
+  <input id="email" type="email" placeholder="you@example.com"
+         autocomplete="email">
 
-<p id="message"></p>
+  <label>Password</label>
+  <input id="password" type="password" placeholder="Your password"
+         autocomplete="current-password">
+
+  <div class="auth-actions">
+    <button id="signup" class="btn">Create account</button>
+    <button id="login" class="btn btn-secondary">Sign in</button>
+  </div>
+
+  <p id="message" role="status"></p>
 </section>
 
+
+<!-- DASHBOARD -->
 <section id="appSection" class="hidden">
 
-<div class="row">
-<h2 id="welcomeUser">Your dashboard</h2>
-<button id="logout" class="secondary">Sign out</button>
-</div>
+  <div class="hero">
+    <div>
+      <h2 id="welcomeUser">Your dashboard</h2>
+      <p class="muted small">Here is your payment overview.</p>
+    </div>
+    <button id="logout" class="btn btn-secondary">Sign out</button>
+  </div>
 
-<div class="grid">
-<div class="card">
-<small>Total paid (USD)</small>
-<div class="metric" id="totalPaid">$0.00</div>
-</div>
+  <div class="grid">
 
-<div class="card">
-<small>Overdue (USD)</small>
-<div class="metric" id="totalOverdue">$0.00</div>
-</div>
+    <div class="card metric-card">
+      <div class="metric-label">Total paid (USD)</div>
+      <div class="metric" id="totalPaid">$0.00</div>
+    </div>
 
-<div class="card">
-<small>Invoices</small>
-<div class="metric" id="invoiceCount">0</div>
-</div>
-</div>
+    <div class="card metric-card">
+      <div class="metric-label">Overdue (USD)</div>
+      <div class="metric red" id="totalOverdue">$0.00</div>
+    </div>
 
-<div class="card">
-<h2>Add a customer</h2>
+    <div class="card metric-card">
+      <div class="metric-label">Total invoices</div>
+      <div class="metric" id="invoiceCount">0</div>
+    </div>
 
-<label>Customer name *</label>
-<input id="customerName" placeholder="Customer name">
+  </div>
 
-<label>Email</label>
-<input id="customerEmail" type="email" placeholder="customer@example.com">
+  <!-- CUSTOMERS -->
+  <div class="card">
+    <div class="section-heading">
+      <div class="section-icon">♙</div>
+      <div>
+        <h2>Add a customer</h2>
+        <div class="muted small">Keep your customer details organized.</div>
+      </div>
+    </div>
 
-<label>Company</label>
-<input id="customerCompany" placeholder="Company name">
+    <div class="form-grid">
+      <div class="full">
+        <label>Customer name *</label>
+        <input id="customerName" placeholder="Customer name">
+      </div>
 
-<label>Phone</label>
-<input id="customerPhone" placeholder="Phone number">
+      <div>
+        <label>Email</label>
+        <input id="customerEmail" type="email"
+               placeholder="customer@example.com">
+      </div>
 
-<button id="addCustomer">Save customer</button>
-</div>
+      <div>
+        <label>Company</label>
+        <input id="customerCompany" placeholder="Company name">
+      </div>
 
-<div class="card">
-<h2>Create an invoice</h2>
+      <div class="full">
+        <label>Phone</label>
+        <input id="customerPhone" placeholder="Phone number">
+      </div>
+    </div>
 
-<label>Customer *</label>
-<select id="customerSelect">
-<option value="">Select a customer</option>
-</select>
+    <button id="addCustomer" class="btn">Save customer</button>
+  </div>
 
-<label>Invoice number *</label>
-<input id="invoiceNumber" placeholder="INV-001">
+  <!-- INVOICES -->
+  <div class="card">
+    <div class="section-heading">
+      <div class="section-icon">▤</div>
+      <div>
+        <h2>Create an invoice</h2>
+        <div class="muted small">Record a payment you are expecting.</div>
+      </div>
+    </div>
 
-<label>Amount *</label>
-<input id="amount" type="number" min="0.01" step="0.01" placeholder="100">
+    <div class="form-grid">
 
-<label>Currency</label>
-<select id="currency">
-<option value="USD">USD ($)</option>
-<option value="EUR">EUR (€)</option>
-<option value="XOF">XOF (FCFA)</option>
-</select>
+      <div class="full">
+        <label>Customer *</label>
+        <select id="customerSelect">
+          <option value="">Select a customer</option>
+        </select>
+      </div>
 
-<label>Issue date</label>
-<input id="issueDate" type="date">
+      <div>
+        <label>Invoice number *</label>
+        <input id="invoiceNumber" placeholder="INV-001">
+      </div>
 
-<label>Due date</label>
-<input id="dueDate" type="date">
+      <div>
+        <label>Amount *</label>
+        <input id="amount" type="number" min="0.01"
+               step="0.01" placeholder="100">
+      </div>
 
-<label>Notes</label>
-<textarea id="notes" placeholder="Additional information"></textarea>
+      <div>
+        <label>Currency</label>
+        <select id="currency">
+          <option value="USD">USD ($)</option>
+          <option value="EUR">EUR (€)</option>
+          <option value="XOF">XOF (FCFA)</option>
+        </select>
+      </div>
 
-<button id="addInvoice">Create invoice</button>
-</div>
+      <div>
+        <label>Issue date</label>
+        <input id="issueDate" type="date">
+      </div>
 
-<div class="card">
-<h2>Your invoices</h2>
-<div id="invoiceList" class="muted">Loading invoices...</div>
-</div>
+      <div>
+        <label>Due date</label>
+        <input id="dueDate" type="date">
+      </div>
 
-<p id="appMessage"></p>
+      <div class="full">
+        <label>Notes</label>
+        <textarea id="notes" placeholder="Additional information"></textarea>
+      </div>
+
+    </div>
+
+    <button id="addInvoice" class="btn">Create invoice</button>
+  </div>
+
+  <!-- INVOICE LIST -->
+  <div class="card">
+    <div class="section-heading">
+      <div class="section-icon">◷</div>
+      <div>
+        <h2>Your invoices</h2>
+        <div class="muted small">Track your payment status.</div>
+      </div>
+    </div>
+
+    <div id="invoiceList" class="muted">Loading invoices...</div>
+  </div>
+
+  <p id="appMessage" role="status"></p>
+
 </section>
+
 </main>
 
+<div class="footer">
+  DuePilot © 2026 · Get paid. Without chasing.
+</div>
+
+
 <script>
+// ========================================
 // SUPABASE CONFIGURATION
-const SUPABASE_URL = "https://lcwfpvnyvexzkzwtqmnm.supabase.co";
-const SUPABASE_KEY = "sb_publishable_43c1npCF1eVhA9tgy1xLTw_3zwQ_WI7";
+// ========================================
+
+// Replace these two values with your own Supabase values.
+// Keep the publishable key only. Never use a service_role key here.
+
+const SUPABASE_URL = "YOUR_SUPABASE_URL";
+const SUPABASE_KEY = "YOUR_PUBLISHABLE_KEY";
 
 const db = window.supabase.createClient(
-SUPABASE_URL,
-SUPABASE_KEY
+  SUPABASE_URL,
+  SUPABASE_KEY
 );
+
+// ========================================
+// APPLICATION STATE
+// ========================================
 
 let currentUser = null;
 let customers = [];
 let invoices = [];
+let loadingData = false;
 
 const $ = id => document.getElementById(id);
 
 function message(text){
-$("message").textContent = text;
+  $("message").textContent = text;
 }
 
 function appMessage(text){
-$("appMessage").textContent = text;
+  $("appMessage").textContent = text;
 }
 
 function escapeHTML(value){
-return String(value ?? "").replace(/[&<>"']/g, c => ({
-"&":"&amp;",
-"<":"&lt;",
-">":"&gt;",
-'"':"&quot;",
-"'":"&#39;"
-})[c]);
+  return String(value ?? "").replace(/[&<>"']/g, c => ({
+    "&":"&amp;",
+    "<":"&lt;",
+    ">":"&gt;",
+    '"':"&quot;",
+    "'":"&#39;"
+  })[c]);
 }
+
+// ========================================
+// AUTHENTICATION DISPLAY
+// ========================================
 
 function showApp(user){
-currentUser = user;
+  const previousUserId = currentUser?.id;
+  currentUser = user;
 
-$("authSection").classList.toggle("hidden", !!user);
-$("appSection").classList.toggle("hidden", !user);
+  $("authSection").classList.toggle("hidden", !!user);
+  $("appSection").classList.toggle("hidden", !user);
 
-if(user){
-const username = user.user_metadata?.username || "User";
-$("welcomeUser").textContent = "Welcome, " + username;
-loadData();
+  if(user){
+    const username = user.user_metadata?.username || "User";
+    $("welcomeUser").textContent = "Welcome, " + username;
+
+    if(previousUserId !== user.id){
+      loadData();
+    }
+  }else{
+    customers = [];
+    invoices = [];
+  }
 }
-}
+
+// ========================================
+// MONEY AND INVOICE STATUS
+// ========================================
 
 function money(amount){
-return new Intl.NumberFormat("en-US",{
-style:"currency",
-currency:"USD"
-}).format(Number(amount || 0));
+  return new Intl.NumberFormat("en-US",{
+    style:"currency",
+    currency:"USD"
+  }).format(Number(amount || 0));
 }
 
 function effectiveStatus(invoice){
-if(invoice.status === "paid") return "paid";
+  if(invoice.status === "paid") return "paid";
 
-if(invoice.due_date &&
-invoice.due_date < new Date().toISOString().slice(0,10)){
-return "overdue";
+  const today = new Date().toISOString().slice(0,10);
+
+  if(invoice.due_date && invoice.due_date < today){
+    return "overdue";
+  }
+
+  return "pending";
 }
 
-return "pending";
-}
+// ========================================
+// LOAD DATA
+// ========================================
 
 async function loadData(){
-if(!currentUser) return;
+  if(!currentUser || loadingData) return;
 
-appMessage("Loading your data...");
+  loadingData = true;
+  appMessage("Loading your data...");
 
-const [customerResult, invoiceResult] = await Promise.all([
-db.from("customers").select("*").order("created_at",{ascending:false}),
-db.from("invoices").select("*").order("created_at",{ascending:false})
-]);
+  try{
+    const [customerResult,invoiceResult] = await Promise.all([
+      db.from("customers")
+        .select("*")
+        .order("created_at",{ascending:false}),
 
-if(customerResult.error || invoiceResult.error){
-appMessage("Unable to load data: " +
-(customerResult.error?.message || invoiceResult.error?.message));
-return;
+      db.from("invoices")
+        .select("*")
+        .order("created_at",{ascending:false})
+    ]);
+
+    if(customerResult.error) throw customerResult.error;
+    if(invoiceResult.error) throw invoiceResult.error;
+
+    customers = customerResult.data || [];
+    invoices = invoiceResult.data || [];
+
+    renderCustomers();
+    renderInvoices();
+    renderMetrics();
+
+    appMessage("");
+
+  }catch(error){
+    appMessage("Unable to load data: " + error.message);
+  }finally{
+    loadingData = false;
+  }
 }
 
-customers = customerResult.data || [];
-invoices = invoiceResult.data || [];
-
-renderCustomers();
-renderInvoices();
-renderMetrics();
-
-appMessage("");
-}
+// ========================================
+// CUSTOMERS
+// ========================================
 
 function renderCustomers(){
-$("customerSelect").innerHTML =
-'<option value="">Select a customer</option>' +
-customers.map(c =>
-`<option value="${escapeHTML(c.id)}">${escapeHTML(c.name)}</option>`
-).join("");
+  $("customerSelect").innerHTML =
+    '<option value="">Select a customer</option>' +
+    customers.map(c =>
+      `<option value="${escapeHTML(c.id)}">${escapeHTML(c.name)}</option>`
+    ).join("");
 }
+
+// ========================================
+// DASHBOARD METRICS
+// ========================================
 
 function renderMetrics(){
-let paid = 0;
-let overdue = 0;
+  let paid = 0;
+  let overdue = 0;
 
-invoices.forEach(inv => {
-if(inv.currency !== "USD") return;
+  invoices.forEach(inv => {
+    if(inv.currency !== "USD") return;
 
-if(effectiveStatus(inv) === "paid"){
-paid += Number(inv.amount);
+    const status = effectiveStatus(inv);
+
+    if(status === "paid"){
+      paid += Number(inv.amount);
+    }
+
+    if(status === "overdue"){
+      overdue += Number(inv.amount);
+    }
+  });
+
+  $("totalPaid").textContent = money(paid);
+  $("totalOverdue").textContent = money(overdue);
+  $("invoiceCount").textContent = invoices.length;
 }
 
-if(effectiveStatus(inv) === "overdue"){
-overdue += Number(inv.amount);
-}
-});
-
-$("totalPaid").textContent = money(paid);
-$("totalOverdue").textContent = money(overdue);
-$("invoiceCount").textContent = invoices.length;
-}
+// ========================================
+// INVOICE DISPLAY
+// ========================================
 
 function renderInvoices(){
-if(!invoices.length){
-$("invoiceList").textContent =
-"No invoices yet. Create your first invoice above.";
-return;
+  if(!invoices.length){
+    $("invoiceList").innerHTML =
+      '<div class="empty">No invoices yet.<br>Create your first invoice above.</div>';
+    return;
+  }
+
+  $("invoiceList").innerHTML = invoices.map(inv => {
+    const customer = customers.find(c => c.id === inv.customer_id);
+    const status = effectiveStatus(inv);
+
+    return `
+      <div class="invoice">
+
+        <div class="row">
+          <span class="invoice-title">
+            ${escapeHTML(inv.invoice_number)}
+          </span>
+
+          <span class="status ${status}">
+            ${status.toUpperCase()}
+          </span>
+        </div>
+
+        <p>${escapeHTML(customer?.name || "Unknown customer")}</p>
+
+        <div class="invoice-amount">
+          ${escapeHTML(inv.currency)} ${escapeHTML(inv.amount)}
+        </div>
+
+        <p class="invoice-meta">
+          Due: ${escapeHTML(inv.due_date || "Not specified")}
+        </p>
+
+        ${status !== "paid" ?
+          `<button class="btn btn-secondary"
+                   data-paid="${escapeHTML(inv.id)}">
+             Mark as paid
+           </button>` : ""}
+
+      </div>
+    `;
+  }).join("");
+
+  document.querySelectorAll("[data-paid]").forEach(button => {
+    button.addEventListener("click",() => {
+      markPaid(button.dataset.paid);
+    });
+  });
 }
 
-$("invoiceList").innerHTML = invoices.map(inv => {
-const customer = customers.find(c => c.id === inv.customer_id);
-const status = effectiveStatus(inv);
-
-return `
-<div class="invoice">
-<div class="row">
-<strong>${escapeHTML(inv.invoice_number)}</strong>
-<span class="status">${status.toUpperCase()}</span>
-</div>
-
-<p>${escapeHTML(customer?.name || "Unknown customer")}</p>
-
-<strong>${escapeHTML(inv.currency)} ${escapeHTML(inv.amount)}</strong>
-
-<p class="muted">
-Due: ${escapeHTML(inv.due_date || "Not specified")}
-</p>
-
-${status !== "paid" ?
-`<button class="secondary" data-paid="${escapeHTML(inv.id)}">
-Mark as paid
-</button>` : ""}
-</div>`;
-}).join("");
-
-document.querySelectorAll("[data-paid]").forEach(button => {
-button.addEventListener("click",() => markPaid(button.dataset.paid));
-});
-}
+// ========================================
+// ADD CUSTOMER
+// ========================================
 
 async function addCustomer(){
-const name = $("customerName").value.trim();
+  const name = $("customerName").value.trim();
 
-if(!name){
-appMessage("Customer name is required.");
-return;
+  if(!name){
+    appMessage("Customer name is required.");
+    return;
+  }
+
+  const button = $("addCustomer");
+  button.disabled = true;
+  button.textContent = "Saving...";
+
+  try{
+    const {error} = await db.from("customers").insert({
+      user_id:currentUser.id,
+      name,
+      email:$("customerEmail").value.trim() || null,
+      company:$("customerCompany").value.trim() || null,
+      phone:$("customerPhone").value.trim() || null
+    });
+
+    if(error) throw error;
+
+    [
+      "customerName",
+      "customerEmail",
+      "customerCompany",
+      "customerPhone"
+    ].forEach(id => $(id).value = "");
+
+    appMessage("Customer saved successfully.");
+    await loadData();
+
+  }catch(error){
+    appMessage(error.message);
+  }finally{
+    button.disabled = false;
+    button.textContent = "Save customer";
+  }
 }
 
-const {error} = await db.from("customers").insert({
-user_id:currentUser.id,
-name,
-email:$("customerEmail").value.trim() || null,
-company:$("customerCompany").value.trim() || null,
-phone:$("customerPhone").value.trim() || null
-});
-
-if(error){
-appMessage(error.message);
-return;
-}
-
-["customerName","customerEmail","customerCompany","customerPhone"]
-.forEach(id => $(id).value = "");
-
-appMessage("Customer saved successfully.");
-await loadData();
-}
+// ========================================
+// CREATE INVOICE
+// ========================================
 
 async function addInvoice(){
-const customerId = $("customerSelect").value;
-const number = $("invoiceNumber").value.trim();
-const amount = Number($("amount").value);
-
-if(!customerId){
-appMessage("Please select a customer.");
-return;
-}
-
-if(!number){
-appMessage("Invoice number is required.");
-return;
-}
-
-if(!Number.isFinite(amount) || amount <= 0){
-appMessage("Enter a valid amount.");
-return;
-}
-
-const {error} = await db.from("invoices").insert({
-user_id:currentUser.id,
-customer_id:customerId,
-invoice_number:number,
-amount,
-currency:$("currency").value,
-issue_date:$("issueDate").value || new Date().toISOString().slice(0,10),
-due_date:$("dueDate").value || null,
-status:"pending",
-notes:$("notes").value.trim() || null
-});
-
-if(error){
-appMessage(error.message);
-return;
-}
-
-["invoiceNumber","amount","issueDate","dueDate","notes"]
-.forEach(id => $(id).value = "");
-
-appMessage("Invoice created successfully.");
-await loadData();
-}
-
-async function markPaid(id){
-const {error} = await db.from("invoices")
-.update({status:"paid"})
-.eq("id",id);
-
-if(error){
-appMessage(error.message);
-return;
-}
-
-appMessage("Payment status updated.");
-await loadData();
-}
-
-// CREATE ACCOUNT WITH USERNAME
-$("signup").addEventListener("click",async () => {
-const username = $("username").value.trim();
-const email = $("email").value.trim();
-const password = $("password").value;
-
-if(!username || !email || !password){
-message("Enter your username, email and password.");
-return;
-}
-
-if(username.length < 3){
-message("Username must contain at least 3 characters.");
-return;
-}
-
-const {data,error} = await db.auth.signUp({
-email,
-password,
-options:{
-data:{
-username:username
-}
-}
-});
-
-if(error){
-message(error.message);
-return;
-}
-
-if(data.session){
-message("Account created successfully.");
-}else{
-message("Account created. Check your email to confirm your account.");
-}
-});
-
-// SIGN IN
-$("login").addEventListener("click",async () => {
-const email = $("email").value.trim();
-const password = $("password").value;
-
-if(!email || !password){
-message("Enter your email and password.");
-return;
-}
-
-const {error} = await db.auth.signInWithPassword({
-email,
-password
-});
-
-if(error){
-message(error.message);
-}
-});
-
-// SIGN OUT
-$("logout").addEventListener("click",async () => {
-const {error} = await db.auth.signOut();
-
-if(error){
-appMessage(error.message);
-}
-});
-
-$("addCustomer").addEventListener("click",addCustomer);
-$("addInvoice").addEventListener("click",addInvoice);
-
-$("issueDate").value = new Date().toISOString().slice(0,10);
-
-// AUTH SESSION
-db.auth.onAuthStateChange((_event,session) => {
-showApp(session?.user || null);
-});
-
-db.auth.getSession().then(({data}) => {
-showApp(data.session?.user || null);
-});
-</script>
-</body>
-                                          </html>
-  
+  const customerId = $("customerSelect").value;
+  const number = $("invoiceNumber").value.trim();
+  const amount = Number($("amount").value);
+  const dueDate = $("dueDate").value;
+  const issueDate = $("issueDate").value 
