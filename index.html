@@ -4,340 +4,473 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="theme-color" content="#0b1120">
-<title>DuePilot — Smart Payment Management</title>
+<title>DuePilot</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <style>
-:root {
-  --bg:#0b1120;
-  --panel:#111c30;
-  --border:#26334a;
-  --green:#22c55e;
-  --text:#f8fafc;
-  --muted:#aab6ca;
-}
-* { box-sizing:border-box; }
-body {
-  margin:0;
-  background:var(--bg);
-  color:var(--text);
-  font-family:Arial,sans-serif;
-  min-height:100vh;
-}
-header {
-  padding:20px;
-  border-bottom:1px solid var(--border);
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-}
-.logo { font-size:24px;font-weight:bold; }
-.logo span { color:var(--green); }
-main {
-  width:min(100% - 32px,440px);
-  margin:55px auto;
-}
-.card {
-  background:var(--panel);
-  border:1px solid var(--border);
-  border-radius:16px;
-  padding:25px;
-}
-h1 { font-size:27px;margin-top:0; }
-p { color:var(--muted);line-height:1.6; }
-label {
-  display:block;
-  margin:17px 0 8px;
-  font-size:14px;
-}
-input {
-  width:100%;
-  padding:14px;
-  background:#0b1120;
-  border:1px solid var(--border);
-  border-radius:8px;
-  color:white;
-  font-size:16px;
-}
-button {
-  width:100%;
-  margin-top:20px;
-  padding:14px;
-  background:var(--green);
-  color:#07130c;
-  border:0;
-  border-radius:8px;
-  font-weight:bold;
-  font-size:15px;
-  cursor:pointer;
-}
-button.secondary {
-  background:transparent;
-  border:1px solid var(--border);
-  color:white;
-}
-.switch {
-  text-align:center;
-  margin-top:20px;
-  font-size:14px;
-}
-.switch button {
-  width:auto;
-  margin:0;
-  padding:5px;
-  background:transparent;
-  color:var(--green);
-}
-.message {
-  font-size:14px;
-  margin-top:15px;
-  overflow-wrap:anywhere;
-}
-.hidden { display:none !important; }
-.stat {
-  background:#17243a;
-  padding:18px;
-  border-radius:10px;
-  margin-top:14px;
-}
-.stat small { color:var(--muted); }
-.stat h2 { margin-bottom:0; }
-footer {
-  text-align:center;
-  color:#718096;
-  padding:25px;
-  font-size:12px;
+*{box-sizing:border-box}
+body{margin:0;background:#0b1020;color:#e8edf7;font-family:Arial,sans-serif}
+header{padding:20px;background:#111a2e;border-bottom:1px solid #26334c}
+h1{margin:0;color:#63e6be}
+header p{color:#9aa9c2;margin:6px 0 0}
+main{max-width:950px;margin:auto;padding:20px}
+.card{background:#141e33;border:1px solid #293750;border-radius:13px;padding:18px;margin-bottom:16px}
+h2{font-size:19px;margin-top:0}
+input,select,textarea{width:100%;padding:12px;margin:7px 0 13px;background:#0b1427;border:1px solid #35445f;border-radius:8px;color:white}
+button{background:#63e6be;color:#07151a;border:0;padding:12px 16px;border-radius:8px;font-weight:bold;cursor:pointer;margin:4px 0}
+button.secondary{background:#293750;color:white}
+.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.metric{font-size:24px;font-weight:bold;color:#63e6be;margin-top:10px}
+small,.muted{color:#9aa9c2}
+.row{display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap}
+.invoice{border-top:1px solid #293750;padding:13px 0}
+.status{font-size:12px;padding:5px 8px;border-radius:20px;background:#293750}
+.hidden{display:none}
+label{font-size:13px;color:#b9c6da}
+#message,#appMessage{margin:12px 0;color:#63e6be}
+@media(max-width:600px){
+.grid{grid-template-columns:1fr}
+main{padding:12px}
 }
 </style>
 </head>
 
 <body>
-
 <header>
-  <div class="logo">✦ Due<span>Pilot</span></div>
-  <span style="color:#aab6ca;font-size:12px">
-    SMART PAYMENT MANAGEMENT
-  </span>
+<h1>DuePilot</h1>
+<p>Get paid. Without chasing.</p>
 </header>
 
 <main>
 
-  <!-- AUTHENTICATION -->
-  <section class="card" id="authSection">
-    <h1 id="formTitle">Welcome back</h1>
-    <p id="formDescription">
-      Sign in to manage your invoices and payments.
-    </p>
+<section id="authSection" class="card">
+<h2>Welcome to DuePilot</h2>
+<p class="muted">Manage your invoices and payments.</p>
 
-    <form id="authForm">
-      <label for="email">Email address</label>
-      <input id="email" type="email"
-        placeholder="you@example.com" required>
+<label>Username</label>
+<input id="username" type="text" placeholder="Choose a username">
 
-      <label for="password">Password</label>
-      <input id="password" type="password"
-        placeholder="Your password" minlength="8" required>
+<label>Email</label>
+<input id="email" type="email" placeholder="you@example.com">
 
-      <button id="submitButton" type="submit">
-        Sign in
-      </button>
-    </form>
+<label>Password</label>
+<input id="password" type="password" placeholder="Your password">
 
-    <div class="switch">
-      <span id="switchText">Don't have an account?</span>
-      <button type="button" id="switchMode">
-        Create account
-      </button>
-    </div>
+<button id="signup">Create account</button>
+<button id="login" class="secondary">Sign in</button>
 
-    <div class="message" id="message" role="status"></div>
-  </section>
+<p id="message"></p>
+</section>
 
-  <!-- PRIVATE DASHBOARD -->
-  <section id="dashboard" class="hidden">
-    <div class="card">
-      <h1>Welcome to DuePilot</h1>
-      <p id="userEmail"></p>
-      <p>Your payment management workspace.</p>
+<section id="appSection" class="hidden">
 
-      <div class="stat">
-        <small>Total invoices</small>
-        <h2>Coming soon</h2>
-      </div>
+<div class="row">
+<h2 id="welcomeUser">Your dashboard</h2>
+<button id="logout" class="secondary">Sign out</button>
+</div>
 
-      <div class="stat">
-        <small>Paid invoices</small>
-        <h2>Coming soon</h2>
-      </div>
+<div class="grid">
+<div class="card">
+<small>Total paid (USD)</small>
+<div class="metric" id="totalPaid">$0.00</div>
+</div>
 
-      <div class="stat">
-        <small>Overdue invoices</small>
-        <h2>Coming soon</h2>
-      </div>
+<div class="card">
+<small>Overdue (USD)</small>
+<div class="metric" id="totalOverdue">$0.00</div>
+</div>
 
-      <button id="logoutButton" class="secondary">
-        Sign out
-      </button>
-    </div>
-  </section>
+<div class="card">
+<small>Invoices</small>
+<div class="metric" id="invoiceCount">0</div>
+</div>
+</div>
 
+<div class="card">
+<h2>Add a customer</h2>
+
+<label>Customer name *</label>
+<input id="customerName" placeholder="Customer name">
+
+<label>Email</label>
+<input id="customerEmail" type="email" placeholder="customer@example.com">
+
+<label>Company</label>
+<input id="customerCompany" placeholder="Company name">
+
+<label>Phone</label>
+<input id="customerPhone" placeholder="Phone number">
+
+<button id="addCustomer">Save customer</button>
+</div>
+
+<div class="card">
+<h2>Create an invoice</h2>
+
+<label>Customer *</label>
+<select id="customerSelect">
+<option value="">Select a customer</option>
+</select>
+
+<label>Invoice number *</label>
+<input id="invoiceNumber" placeholder="INV-001">
+
+<label>Amount *</label>
+<input id="amount" type="number" min="0.01" step="0.01" placeholder="100">
+
+<label>Currency</label>
+<select id="currency">
+<option value="USD">USD ($)</option>
+<option value="EUR">EUR (€)</option>
+<option value="XOF">XOF (FCFA)</option>
+</select>
+
+<label>Issue date</label>
+<input id="issueDate" type="date">
+
+<label>Due date</label>
+<input id="dueDate" type="date">
+
+<label>Notes</label>
+<textarea id="notes" placeholder="Additional information"></textarea>
+
+<button id="addInvoice">Create invoice</button>
+</div>
+
+<div class="card">
+<h2>Your invoices</h2>
+<div id="invoiceList" class="muted">Loading invoices...</div>
+</div>
+
+<p id="appMessage"></p>
+</section>
 </main>
 
-<footer>
-  © 2026 DuePilot. All rights reserved.
-</footer>
-
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
 <script>
-const SUPABASE_URL = "https://lcwfpvnyvexzkzwtqmnm.supabase.co";
-const SUPABASE_KEY = "sb_publishable_43c1npCF1eVhA9tgy1xLTw_3zwQ_WI7";
+// SUPABASE CONFIGURATION
+const SUPABASE_URL = "YOUR_SUPABASE_URL";
+const SUPABASE_KEY = "YOUR_PUBLISHABLE_KEY";
 
-const authSection = document.getElementById("authSection");
-const dashboard = document.getElementById("dashboard");
-const authForm = document.getElementById("authForm");
-const message = document.getElementById("message");
-
-let isSignUp = false;
-let supabaseClient;
-
-function showMessage(text, color = "#aab6ca") {
-  message.textContent = text;
-  message.style.color = color;
-}
-
-function renderDashboard(session) {
-  if (session) {
-    authSection.classList.add("hidden");
-    dashboard.classList.remove("hidden");
-    document.getElementById("userEmail").textContent =
-      session.user.email || "";
-  } else {
-    dashboard.classList.add("hidden");
-    authSection.classList.remove("hidden");
-  }
-}
-
-function setMode(signUp) {
-  isSignUp = signUp;
-
-  document.getElementById("formTitle").textContent =
-    signUp ? "Create your account" : "Welcome back";
-
-  document.getElementById("formDescription").textContent =
-    signUp
-      ? "Start managing your payments with DuePilot."
-      : "Sign in to manage your invoices and payments.";
-
-  document.getElementById("submitButton").textContent =
-    signUp ? "Create account" : "Sign in";
-
-  document.getElementById("switchText").textContent =
-    signUp ? "Already have an account?" : "Don't have an account?";
-
-  document.getElementById("switchMode").textContent =
-    signUp ? "Sign in" : "Create account";
-
-  showMessage("");
-}
-
-document.getElementById("switchMode").addEventListener("click", () => {
-  setMode(!isSignUp);
-});
-
-authForm.addEventListener("submit", async (event) => {
-  event.preventDefault();
-
-  const email = document.getElementById("email").value.trim();
-  const password = document.getElementById("password").value;
-
-  const button = document.getElementById("submitButton");
-  button.disabled = true;
-  button.textContent = "Please wait...";
-  showMessage("Connecting...");
-
-  try {
-    let result;
-
-    if (isSignUp) {
-      result = await supabaseClient.auth.signUp({
-        email,
-        password
-      });
-    } else {
-      result = await supabaseClient.auth.signInWithPassword({
-        email,
-        password
-      });
-    }
-
-    if (result.error) throw result.error;
-
-    if (isSignUp && !result.data.session) {
-      showMessage(
-        "Account created! Check your email to confirm your account.",
-        "#4ade80"
-      );
-    } else {
-      showMessage("Authentication successful.", "#4ade80");
-    }
-
-  } catch (error) {
-    showMessage(error.message, "#f87171");
-  } finally {
-    button.disabled = false;
-    button.textContent = isSignUp ? "Create account" : "Sign in";
-  }
-});
-
-document.getElementById("logoutButton").addEventListener(
-  "click", async () => {
-    const { error } = await supabaseClient.auth.signOut();
-
-    if (error) {
-      alert(error.message);
-    } else {
-      showMessage("You have signed out.");
-    }
-  }
+const db = window.supabase.createClient(
+SUPABASE_URL,
+SUPABASE_KEY
 );
 
-async function initialize() {
-  if (
-    SUPABASE_URL === "YOUR_SUPABASE_URL" ||
-    SUPABASE_KEY === "YOUR_PUBLISHABLE_KEY"
-  ) {
-    showMessage("Supabase configuration is required.", "#f87171");
-    return;
-  }
+let currentUser = null;
+let customers = [];
+let invoices = [];
 
-  if (!window.supabase) {
-    showMessage("Unable to load Supabase library.", "#f87171");
-    return;
-  }
+const $ = id => document.getElementById(id);
 
-  supabaseClient = window.supabase.createClient(
-    SUPABASE_URL,
-    SUPABASE_KEY
-  );
-
-  supabaseClient.auth.onAuthStateChange((_event, session) => {
-    renderDashboard(session);
-  });
-
-  const { data, error } = await supabaseClient.auth.getSession();
-
-  if (error) {
-    showMessage(error.message, "#f87171");
-    return;
-  }
-
-  renderDashboard(data.session);
+function message(text){
+$("message").textContent = text;
 }
 
-initialize();
-</script>
+function appMessage(text){
+$("appMessage").textContent = text;
+}
 
+function escapeHTML(value){
+return String(value ?? "").replace(/[&<>"']/g, c => ({
+"&":"&amp;",
+"<":"&lt;",
+">":"&gt;",
+'"':"&quot;",
+"'":"&#39;"
+})[c]);
+}
+
+function showApp(user){
+currentUser = user;
+
+$("authSection").classList.toggle("hidden", !!user);
+$("appSection").classList.toggle("hidden", !user);
+
+if(user){
+const username = user.user_metadata?.username || "User";
+$("welcomeUser").textContent = "Welcome, " + username;
+loadData();
+}
+}
+
+function money(amount){
+return new Intl.NumberFormat("en-US",{
+style:"currency",
+currency:"USD"
+}).format(Number(amount || 0));
+}
+
+function effectiveStatus(invoice){
+if(invoice.status === "paid") return "paid";
+
+if(invoice.due_date &&
+invoice.due_date < new Date().toISOString().slice(0,10)){
+return "overdue";
+}
+
+return "pending";
+}
+
+async function loadData(){
+if(!currentUser) return;
+
+appMessage("Loading your data...");
+
+const [customerResult, invoiceResult] = await Promise.all([
+db.from("customers").select("*").order("created_at",{ascending:false}),
+db.from("invoices").select("*").order("created_at",{ascending:false})
+]);
+
+if(customerResult.error || invoiceResult.error){
+appMessage("Unable to load data: " +
+(customerResult.error?.message || invoiceResult.error?.message));
+return;
+}
+
+customers = customerResult.data || [];
+invoices = invoiceResult.data || [];
+
+renderCustomers();
+renderInvoices();
+renderMetrics();
+
+appMessage("");
+}
+
+function renderCustomers(){
+$("customerSelect").innerHTML =
+'<option value="">Select a customer</option>' +
+customers.map(c =>
+`<option value="${escapeHTML(c.id)}">${escapeHTML(c.name)}</option>`
+).join("");
+}
+
+function renderMetrics(){
+let paid = 0;
+let overdue = 0;
+
+invoices.forEach(inv => {
+if(inv.currency !== "USD") return;
+
+if(effectiveStatus(inv) === "paid"){
+paid += Number(inv.amount);
+}
+
+if(effectiveStatus(inv) === "overdue"){
+overdue += Number(inv.amount);
+}
+});
+
+$("totalPaid").textContent = money(paid);
+$("totalOverdue").textContent = money(overdue);
+$("invoiceCount").textContent = invoices.length;
+}
+
+function renderInvoices(){
+if(!invoices.length){
+$("invoiceList").textContent =
+"No invoices yet. Create your first invoice above.";
+return;
+}
+
+$("invoiceList").innerHTML = invoices.map(inv => {
+const customer = customers.find(c => c.id === inv.customer_id);
+const status = effectiveStatus(inv);
+
+return `
+<div class="invoice">
+<div class="row">
+<strong>${escapeHTML(inv.invoice_number)}</strong>
+<span class="status">${status.toUpperCase()}</span>
+</div>
+
+<p>${escapeHTML(customer?.name || "Unknown customer")}</p>
+
+<strong>${escapeHTML(inv.currency)} ${escapeHTML(inv.amount)}</strong>
+
+<p class="muted">
+Due: ${escapeHTML(inv.due_date || "Not specified")}
+</p>
+
+${status !== "paid" ?
+`<button class="secondary" data-paid="${escapeHTML(inv.id)}">
+Mark as paid
+</button>` : ""}
+</div>`;
+}).join("");
+
+document.querySelectorAll("[data-paid]").forEach(button => {
+button.addEventListener("click",() => markPaid(button.dataset.paid));
+});
+}
+
+async function addCustomer(){
+const name = $("customerName").value.trim();
+
+if(!name){
+appMessage("Customer name is required.");
+return;
+}
+
+const {error} = await db.from("customers").insert({
+user_id:currentUser.id,
+name,
+email:$("customerEmail").value.trim() || null,
+company:$("customerCompany").value.trim() || null,
+phone:$("customerPhone").value.trim() || null
+});
+
+if(error){
+appMessage(error.message);
+return;
+}
+
+["customerName","customerEmail","customerCompany","customerPhone"]
+.forEach(id => $(id).value = "");
+
+appMessage("Customer saved successfully.");
+await loadData();
+}
+
+async function addInvoice(){
+const customerId = $("customerSelect").value;
+const number = $("invoiceNumber").value.trim();
+const amount = Number($("amount").value);
+
+if(!customerId){
+appMessage("Please select a customer.");
+return;
+}
+
+if(!number){
+appMessage("Invoice number is required.");
+return;
+}
+
+if(!Number.isFinite(amount) || amount <= 0){
+appMessage("Enter a valid amount.");
+return;
+}
+
+const {error} = await db.from("invoices").insert({
+user_id:currentUser.id,
+customer_id:customerId,
+invoice_number:number,
+amount,
+currency:$("currency").value,
+issue_date:$("issueDate").value || new Date().toISOString().slice(0,10),
+due_date:$("dueDate").value || null,
+status:"pending",
+notes:$("notes").value.trim() || null
+});
+
+if(error){
+appMessage(error.message);
+return;
+}
+
+["invoiceNumber","amount","issueDate","dueDate","notes"]
+.forEach(id => $(id).value = "");
+
+appMessage("Invoice created successfully.");
+await loadData();
+}
+
+async function markPaid(id){
+const {error} = await db.from("invoices")
+.update({status:"paid"})
+.eq("id",id);
+
+if(error){
+appMessage(error.message);
+return;
+}
+
+appMessage("Payment status updated.");
+await loadData();
+}
+
+// CREATE ACCOUNT WITH USERNAME
+$("signup").addEventListener("click",async () => {
+const username = $("username").value.trim();
+const email = $("email").value.trim();
+const password = $("password").value;
+
+if(!username || !email || !password){
+message("Enter your username, email and password.");
+return;
+}
+
+if(username.length < 3){
+message("Username must contain at least 3 characters.");
+return;
+}
+
+const {data,error} = await db.auth.signUp({
+email,
+password,
+options:{
+data:{
+username:username
+}
+}
+});
+
+if(error){
+message(error.message);
+return;
+}
+
+if(data.session){
+message("Account created successfully.");
+}else{
+message("Account created. Check your email to confirm your account.");
+}
+});
+
+// SIGN IN
+$("login").addEventListener("click",async () => {
+const email = $("email").value.trim();
+const password = $("password").value;
+
+if(!email || !password){
+message("Enter your email and password.");
+return;
+}
+
+const {error} = await db.auth.signInWithPassword({
+email,
+password
+});
+
+if(error){
+message(error.message);
+}
+});
+
+// SIGN OUT
+$("logout").addEventListener("click",async () => {
+const {error} = await db.auth.signOut();
+
+if(error){
+appMessage(error.message);
+}
+});
+
+$("addCustomer").addEventListener("click",addCustomer);
+$("addInvoice").addEventListener("click",addInvoice);
+
+$("issueDate").value = new Date().toISOString().slice(0,10);
+
+// AUTH SESSION
+db.auth.onAuthStateChange((_event,session) => {
+showApp(session?.user || null);
+});
+
+db.auth.getSession().then(({data}) => {
+showApp(data.session?.user || null);
+});
+</script>
 </body>
-</html>
- 
+                                          </html>
+  
