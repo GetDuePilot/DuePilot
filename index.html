@@ -1,122 +1,343 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>DuePilot — Get paid. Without chasing.</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#0b1120">
+<title>DuePilot — Smart Payment Management</title>
+
 <style>
-*{box-sizing:border-box}
-body{
- margin:0;
- font-family:Arial,sans-serif;
- background:#0b1120;
- color:#f8fafc;
+:root {
+  --bg:#0b1120;
+  --panel:#111c30;
+  --border:#26334a;
+  --green:#22c55e;
+  --text:#f8fafc;
+  --muted:#aab6ca;
 }
-header{
- display:flex;
- justify-content:space-between;
- align-items:center;
- padding:22px 8%;
- border-bottom:1px solid #202b40;
+* { box-sizing:border-box; }
+body {
+  margin:0;
+  background:var(--bg);
+  color:var(--text);
+  font-family:Arial,sans-serif;
+  min-height:100vh;
 }
-.logo{font-size:25px;font-weight:bold}
-.logo span{color:#22c55e}
-nav a{
- color:#aab6ca;
- text-decoration:none;
- margin-left:22px;
+header {
+  padding:20px;
+  border-bottom:1px solid var(--border);
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
 }
-.hero{
- text-align:center;
- padding:100px 20px 75px;
- max-width:850px;
- margin:auto;
+.logo { font-size:24px;font-weight:bold; }
+.logo span { color:var(--green); }
+main {
+  width:min(100% - 32px,440px);
+  margin:55px auto;
 }
-.tag{
- color:#22c55e;
- background:#123024;
- padding:9px 15px;
- border-radius:30px;
- font-size:13px;
+.card {
+  background:var(--panel);
+  border:1px solid var(--border);
+  border-radius:16px;
+  padding:25px;
 }
-h1{
- font-size:clamp(38px,7vw,65px);
- line-height:1.1;
- margin:30px 0 20px;
+h1 { font-size:27px;margin-top:0; }
+p { color:var(--muted);line-height:1.6; }
+label {
+  display:block;
+  margin:17px 0 8px;
+  font-size:14px;
 }
-h1 span{color:#22c55e}
-p{
- color:#aab6ca;
- line-height:1.7;
- font-size:17px;
+input {
+  width:100%;
+  padding:14px;
+  background:#0b1120;
+  border:1px solid var(--border);
+  border-radius:8px;
+  color:white;
+  font-size:16px;
 }
-.btn{
- display:inline-block;
- margin-top:25px;
- padding:15px 25px;
- background:#22c55e;
- color:#07130c;
- text-decoration:none;
- font-weight:bold;
- border-radius:9px;
+button {
+  width:100%;
+  margin-top:20px;
+  padding:14px;
+  background:var(--green);
+  color:#07130c;
+  border:0;
+  border-radius:8px;
+  font-weight:bold;
+  font-size:15px;
+  cursor:pointer;
 }
-.features{
- display:grid;
- grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
- gap:18px;
- padding:25px 8% 80px;
+button.secondary {
+  background:transparent;
+  border:1px solid var(--border);
+  color:white;
 }
-.card{
- background:#111c30;
- border:1px solid #26334a;
- padding:25px;
- border-radius:14px;
+.switch {
+  text-align:center;
+  margin-top:20px;
+  font-size:14px;
 }
-.card h3{margin-top:0}
-.card p{font-size:15px}
-footer{
- text-align:center;
- padding:25px;
- border-top:1px solid #202b40;
- color:#718096;
+.switch button {
+  width:auto;
+  margin:0;
+  padding:5px;
+  background:transparent;
+  color:var(--green);
+}
+.message {
+  font-size:14px;
+  margin-top:15px;
+  overflow-wrap:anywhere;
+}
+.hidden { display:none !important; }
+.stat {
+  background:#17243a;
+  padding:18px;
+  border-radius:10px;
+  margin-top:14px;
+}
+.stat small { color:var(--muted); }
+.stat h2 { margin-bottom:0; }
+footer {
+  text-align:center;
+  color:#718096;
+  padding:25px;
+  font-size:12px;
 }
 </style>
 </head>
+
 <body>
 
 <header>
- <div class="logo">✦ Due<span>Pilot</span></div>
- <nav><a href="#features">Features</a></nav>
+  <div class="logo">✦ Due<span>Pilot</span></div>
+  <span style="color:#aab6ca;font-size:12px">
+    SMART PAYMENT MANAGEMENT
+  </span>
 </header>
 
-<section class="hero">
- <span class="tag">SMART PAYMENT MANAGEMENT</span>
- <h1>Get paid.<br><span>Without chasing.</span></h1>
- <p>
- Manage invoices, track overdue payments and organize
- customer reminders from one simple dashboard.
- </p>
- <a class="btn" href="#features">Explore DuePilot →</a>
-</section>
+<main>
 
-<section class="features" id="features">
- <div class="card">
-  <h3>📄 Invoice Tracking</h3>
-  <p>Keep all your invoices organized and monitor their status.</p>
- </div>
- <div class="card">
-  <h3>⏰ Payment Reminders</h3>
-  <p>Stay on top of payment deadlines and overdue invoices.</p>
- </div>
- <div class="card">
-  <h3>📊 Payment Overview</h3>
-  <p>Get a clearer view of payments received and outstanding.</p>
- </div>
-</section>
+  <!-- AUTHENTICATION -->
+  <section class="card" id="authSection">
+    <h1 id="formTitle">Welcome back</h1>
+    <p id="formDescription">
+      Sign in to manage your invoices and payments.
+    </p>
+
+    <form id="authForm">
+      <label for="email">Email address</label>
+      <input id="email" type="email"
+        placeholder="you@example.com" required>
+
+      <label for="password">Password</label>
+      <input id="password" type="password"
+        placeholder="Your password" minlength="8" required>
+
+      <button id="submitButton" type="submit">
+        Sign in
+      </button>
+    </form>
+
+    <div class="switch">
+      <span id="switchText">Don't have an account?</span>
+      <button type="button" id="switchMode">
+        Create account
+      </button>
+    </div>
+
+    <div class="message" id="message" role="status"></div>
+  </section>
+
+  <!-- PRIVATE DASHBOARD -->
+  <section id="dashboard" class="hidden">
+    <div class="card">
+      <h1>Welcome to DuePilot</h1>
+      <p id="userEmail"></p>
+      <p>Your payment management workspace.</p>
+
+      <div class="stat">
+        <small>Total invoices</small>
+        <h2>Coming soon</h2>
+      </div>
+
+      <div class="stat">
+        <small>Paid invoices</small>
+        <h2>Coming soon</h2>
+      </div>
+
+      <div class="stat">
+        <small>Overdue invoices</small>
+        <h2>Coming soon</h2>
+      </div>
+
+      <button id="logoutButton" class="secondary">
+        Sign out
+      </button>
+    </div>
+  </section>
+
+</main>
 
 <footer>
- © 2026 DuePilot. All rights reserved.
+  © 2026 DuePilot. All rights reserved.
 </footer>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+const SUPABASE_URL = "https://lcwfpvnyvexzkzwtqmnm.supabase.co/rest/v1/";
+const SUPABASE_KEY = "sb_publishable_43c1npCF1eVhA9tgy1xLTw_3zwQ_WI7";
+
+const authSection = document.getElementById("authSection");
+const dashboard = document.getElementById("dashboard");
+const authForm = document.getElementById("authForm");
+const message = document.getElementById("message");
+
+let isSignUp = false;
+let supabaseClient;
+
+function showMessage(text, color = "#aab6ca") {
+  message.textContent = text;
+  message.style.color = color;
+}
+
+function renderDashboard(session) {
+  if (session) {
+    authSection.classList.add("hidden");
+    dashboard.classList.remove("hidden");
+    document.getElementById("userEmail").textContent =
+      session.user.email || "";
+  } else {
+    dashboard.classList.add("hidden");
+    authSection.classList.remove("hidden");
+  }
+}
+
+function setMode(signUp) {
+  isSignUp = signUp;
+
+  document.getElementById("formTitle").textContent =
+    signUp ? "Create your account" : "Welcome back";
+
+  document.getElementById("formDescription").textContent =
+    signUp
+      ? "Start managing your payments with DuePilot."
+      : "Sign in to manage your invoices and payments.";
+
+  document.getElementById("submitButton").textContent =
+    signUp ? "Create account" : "Sign in";
+
+  document.getElementById("switchText").textContent =
+    signUp ? "Already have an account?" : "Don't have an account?";
+
+  document.getElementById("switchMode").textContent =
+    signUp ? "Sign in" : "Create account";
+
+  showMessage("");
+}
+
+document.getElementById("switchMode").addEventListener("click", () => {
+  setMode(!isSignUp);
+});
+
+authForm.addEventListener("submit", async (event) => {
+  event.preventDefault();
+
+  const email = document.getElementById("email").value.trim();
+  const password = document.getElementById("password").value;
+
+  const button = document.getElementById("submitButton");
+  button.disabled = true;
+  button.textContent = "Please wait...";
+  showMessage("Connecting...");
+
+  try {
+    let result;
+
+    if (isSignUp) {
+      result = await supabaseClient.auth.signUp({
+        email,
+        password
+      });
+    } else {
+      result = await supabaseClient.auth.signInWithPassword({
+        email,
+        password
+      });
+    }
+
+    if (result.error) throw result.error;
+
+    if (isSignUp && !result.data.session) {
+      showMessage(
+        "Account created! Check your email to confirm your account.",
+        "#4ade80"
+      );
+    } else {
+      showMessage("Authentication successful.", "#4ade80");
+    }
+
+  } catch (error) {
+    showMessage(error.message, "#f87171");
+  } finally {
+    button.disabled = false;
+    button.textContent = isSignUp ? "Create account" : "Sign in";
+  }
+});
+
+document.getElementById("logoutButton").addEventListener(
+  "click", async () => {
+    const { error } = await supabaseClient.auth.signOut();
+
+    if (error) {
+      alert(error.message);
+    } else {
+      showMessage("You have signed out.");
+    }
+  }
+);
+
+async function initialize() {
+  if (
+    SUPABASE_URL === "YOUR_SUPABASE_URL" ||
+    SUPABASE_KEY === "YOUR_PUBLISHABLE_KEY"
+  ) {
+    showMessage("Supabase configuration is required.", "#f87171");
+    return;
+  }
+
+  if (!window.supabase) {
+    showMessage("Unable to load Supabase library.", "#f87171");
+    return;
+  }
+
+  supabaseClient = window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+  );
+
+  supabaseClient.auth.onAuthStateChange((_event, session) => {
+    renderDashboard(session);
+  });
+
+  const { data, error } = await supabaseClient.auth.getSession();
+
+  if (error) {
+    showMessage(error.message, "#f87171");
+    return;
+  }
+
+  renderDashboard(data.session);
+}
+
+initialize();
+</script>
+
 </body>
-  </html>
+</html>
+ 
